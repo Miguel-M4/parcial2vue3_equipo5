@@ -4,40 +4,60 @@
       v-if="isLoggedIn"
       class="flex items-center h-14 px-4 border-b border-gray-300 sm:h-16 md:px-6 lg:px-8 bg-white shadow-md"
     >
-      <div>
+      <div class="flex items-center justify-between w-full">
         <a class="flex items-center gap-2 font-semibold" href="/">
           <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="40" height="40" />
           <span class="text-xl font-bold text-blue-600">Pokémon App</span>
         </a>
-      </div>
-      <nav class="ml-auto flex items-center h-10 space-x-4 sm:space-x-6">
-        <RouterLink
-          to="/"
-          class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-1 transition duration-200 hover:bg-gradient-to-l"
-          >Principal</RouterLink
-        >
-        <RouterLink
-          :to="{ name: 'PokemonComparison' }"
-          class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-1 transition duration-200 hover:bg-gradient-to-l"
-          >Comparar Pokémon</RouterLink
-        >
-        <RouterLink
-          :to="{ name: 'BattleLog' }"
-          class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-1 transition duration-200 hover:bg-gradient-to-l"
-          >BattleLog</RouterLink
-        >
-        <RouterLink
-          :to="{ name: 'contacto' }"
-          class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-1 transition duration-200 hover:bg-gradient-to-l"
-          >Contacto</RouterLink
-        >
+        <!-- Botón de Menú Hamburguesa -->
         <button
-          @click="logout"
-          class="bg-red-600 text-white rounded-lg px-4 py-2 transition duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+          @click="toggleMenu"
+          class="block text-gray-600 sm:hidden focus:outline-none"
         >
-          Cerrar Sesión
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
         </button>
-      </nav>
+        <!-- Navegación -->
+        <nav
+          :class="{
+            'absolute top-14 left-0 w-full bg-white shadow-lg sm:static sm:bg-transparent sm:shadow-none': isMenuOpen,
+            'hidden sm:flex': !isMenuOpen,
+          }"
+          class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 py-4 sm:py-0 px-6 sm:px-0"
+        >
+          <RouterLink
+            to="/"
+            class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-2 transition duration-200 hover:bg-gradient-to-l w-full sm:w-auto text-center"
+            @click="closeMenu"
+            >Principal</RouterLink
+          >
+          <RouterLink
+            :to="{ name: 'PokemonComparison' }"
+            class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-2 transition duration-200 hover:bg-gradient-to-l w-full sm:w-auto text-center"
+            @click="closeMenu"
+            >Comparar Pokémon</RouterLink
+          >
+          <RouterLink
+            :to="{ name: 'BattleLog' }"
+            class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-2 transition duration-200 hover:bg-gradient-to-l w-full sm:w-auto text-center"
+            @click="closeMenu"
+            >BattleLog</RouterLink
+          >
+          <RouterLink
+            :to="{ name: 'contacto' }"
+            class="text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg px-3 py-2 transition duration-200 hover:bg-gradient-to-l w-full sm:w-auto text-center"
+            @click="closeMenu"
+            >Contacto</RouterLink
+          >
+          <button
+            @click="() => { logout(); closeMenu(); }"
+            class="bg-red-600 text-white rounded-lg px-4 py-2 transition duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-auto text-center"
+          >
+            Cerrar Sesión
+          </button>
+        </nav>
+      </div>
     </header>
 
     <main class="flex-1 flex items-center justify-center py-6">
@@ -66,6 +86,7 @@ export default {
   },
   setup() {
     const isLoggedIn = ref(false);
+    const isMenuOpen = ref(false); // Estado para el menú móvil
 
     // Verifica el estado de autenticación al cargar el componente
     onMounted(() => {
@@ -83,7 +104,22 @@ export default {
       localStorage.setItem('isLoggedIn', 'false'); // Elimina el estado en localStorage
     };
 
-    return { isLoggedIn, handleLoginSuccess, logout };
+    const toggleMenu = () => {
+      isMenuOpen.value = !isMenuOpen.value; // Alterna el estado del menú
+    };
+
+    const closeMenu = () => {
+      isMenuOpen.value = false; // Cierra el menú
+    };
+
+    return { isLoggedIn, handleLoginSuccess, logout, isMenuOpen, toggleMenu, closeMenu };
   }
 };
 </script>
+
+<style scoped>
+.logo {
+  width: 40px;
+  height: 40px;
+}
+</style>
